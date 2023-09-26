@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js"></script>
+    <model-viewer src="vass.glb" alt="A 3D model of a car" camera-controls
+        camera-orbit="0deg 90deg 5m">
+    </model-viewer>
+
+    <button id="captureButton">Capture from Camera</button>
+
+    <script>
+        const captureButton = document.getElementById('captureButton');
+        const viewer = document.querySelector('model-viewer');
+
+        captureButton.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const track = stream.getVideoTracks()[0];
+                const imageCapture = new ImageCapture(track);
+
+                const photoBlob = await imageCapture.takePhoto();
+                const photoUrl = URL.createObjectURL(photoBlob);
+
+                const img = new Image();
+                img.src = photoUrl;
+                document.body.appendChild(img);
+
+                stream.getVideoTracks()[0].stop();
+            } catch (error) {
+                console.error('Error capturing from camera:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>
